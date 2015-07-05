@@ -24,12 +24,12 @@ public class ResSendFileHandler extends AbstractResponseHandler {
 
 	@Override
 	public void handleResponse() {
-		System.out.println("发送文件");
+		log.info("发送文件");
 		
 		// 解析loginFlag部分
 		JSONObject json = (JSONObject) JsonUtil.parseJson(super.responseMsg,
 				"res");
-		filePath = json.getString("content");
+		filePath = json.getString("words");
 
 		//System.out.println(fileSocket.getPort());
 
@@ -51,7 +51,7 @@ public class ResSendFileHandler extends AbstractResponseHandler {
 				// 文件读入流
 				FileInputStream fin = new FileInputStream(f);
 
-				System.out.println("开始传输文件");
+				log.info("开始传输文件");
 
 				//int i = 1;
 				int length = 0;
@@ -62,7 +62,7 @@ public class ResSendFileHandler extends AbstractResponseHandler {
 				}
 				//System.out.println(i++ + " 次：" + length);
 				
-				System.out.println("文件传输完毕");
+				log.info("文件传输完毕");
 
 				// 关闭流
 				fin.close();
@@ -71,7 +71,7 @@ public class ResSendFileHandler extends AbstractResponseHandler {
 				JOptionPane.showMessageDialog(null, "上传成功！");
 
 			} catch (Exception ex) {
-				System.out.println("啦啦啦");
+				log.info("异常了啦啦啦");
 				ex.printStackTrace();
 			}
 		}

@@ -27,7 +27,7 @@ public class LoginHandler extends AbstractRequestHandler {
 	@Override
 	public void handleRequest(Message msg) {
 		log.info("loginHandler 处理消息.." + msg );
-		String words = msg.getWords();
+		String words = (String) msg.getWords();
 		String[] ss = words.split("_");
 		String content = "";
 		log.info("name = " + ss[0] + " password = " + ss[1]);
@@ -55,7 +55,7 @@ public class LoginHandler extends AbstractRequestHandler {
 		res.setReceiver(ss[0]);
 		res.setWords(content);
 		
-		log.info("loginHandler 返回结果 = "  + res + " 添加到返回队列");
+		log.info(this.getClass().getName() + " 返回结果 = "  + res + " 添加到返回队列");
 		handler.addResponse(res);
 	}
 

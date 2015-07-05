@@ -18,7 +18,7 @@ public class AddFriendHandler extends AbstractRequestHandler {
 	
 	@Override
 	public void handleRequest(Message msg) {
-		String flag = msg.getWords();
+		String flag = (String) msg.getWords();
 		Message res = new Message();
 		res.setReceiverIP(msg.getReceiverIP());
 		res.setReceiverPort(msg.getReceiverPort());

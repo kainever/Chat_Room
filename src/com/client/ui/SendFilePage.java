@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import net.sf.json.JSONObject;
 
+import com.client.startup.Client;
 import com.transmit.protocol.Message;
 import com.util.JsonUtil;
 import com.util.MsgKey;
@@ -137,19 +138,23 @@ public class SendFilePage extends JFrame {
 		Long l = f.length();
 		map.put("length", l.toString());
 		JSONObject filePart = JSONObject.fromObject(map);
+log.info("文件上床第一次握手文件信息 ： " + filePart);		
 
 		String filePartJson = JsonUtil.buildJson("filePart", filePart);
-
+		
 		// 将文件名和msgNum发送到server
 		Message message = new Message();
 		message.setPublisher(userName);
 		message.setReceiver(friendName);
 		message.setMsgNum(MsgKey.SEND_FILE);
 		message.setWords(filePartJson);
+		message.setReceiverIP(socket.getLocalAddress().getHostAddress());
+		message.setReceiverPort("" + socket.getLocalPort());
+		message.setFilePort(Client.localFilePort);
 
 		String sendMsg1 = message.getResult();
 		String jsonOut = JsonUtil.buildJson("msg", sendMsg1);
-
+log.info("文件上床第一次握手完整信息 ：" + jsonOut);
 		// 指导者
 		BuilderDirector builderDirector = new BuilderDirector(new PrintWriterBuilder(this.socket));
 		// 使用指导者生成一个writer

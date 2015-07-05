@@ -16,6 +16,7 @@ import net.sf.json.JSONObject;
 import com.client.ui.ChatBox;
 import com.transmit.protocol.Message;
 import com.util.JsonUtil;
+import com.util.MsgKey;
 import com.util.builder.BuilderDirector;
 import com.util.builder.PrintWriterBuilder;
 
@@ -51,9 +52,9 @@ public class ResReceiveFileHandler extends AbstractResponseHandler {
 		fileLength = Long.parseLong(length);
 		originalFileName = json1.getString("fileName");
 
-//		ChatBox c = ChatBox.getInstance(socket, ResAddFriendHandler.getRealName(),
-//				friendName);
-//		c.setTitle("File Chat Box");
+		ChatBox c = ChatBox.getInstance(socket, ResAddFriendHandler.getRealName(),
+				friendName);
+		c.setTitle("File Chat Box");
 
 		/* 向服务器发送消息：是否接收文件 */
 		int n = JOptionPane.showConfirmDialog(null, "用户 " + friendName + " 传来文件 "
@@ -80,8 +81,8 @@ public class ResReceiveFileHandler extends AbstractResponseHandler {
 
 			// 将字符串打包成需要客户端解析的形式
 			Message trans = new Message();
-//			trans.setPublisher(ResAddFriendHandler.getRealName());
-			trans.setMsgNum("9");
+			trans.setPublisher(ResAddFriendHandler.getRealName());
+			trans.setMsgNum(MsgKey.RCV_FILE);
 			trans.setReceiver(friendName);
 			trans.setWords(filePartJson);
 			String result = trans.getResult();

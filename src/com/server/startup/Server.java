@@ -2,8 +2,10 @@ package com.server.startup;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -31,12 +33,35 @@ public class Server {
 	UserMap userMap;
 	MsgManager msgManager;
 	Map<String, AbstractRequestHandler> requestMap;
+	boolean fileServerRun;
+	public static Map<String , Socket> fileSocketMap = new ConcurrentHashMap<String , Socket> ();
 	 
 //	private UserList users;
+	
+	class AcceptThread extends Thread {
+		@Override
+		public void run() {
+			log.info("fileServer接收线程启动....");
+			while(fileServerRun) {
+				try {
+					Socket s = fileServer.accept();
+					String key = s.getRemoteSocketAddress().toString().trim().substring(1);
+					log.info("fileServer 接收到socket " + s + " " + key);
+					fileSocketMap.put(key, s);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
 	public Server() throws IOException {
 
 		fileServer = new ServerSocket(8889);
+		this.fileServerRun = true;
+		new AcceptThread().start();
+//		fileServer.accept();
+		
 		log.info("文件传输服务器启动，开始监听.....");
 	}
 
@@ -57,8 +82,8 @@ public class Server {
 		AbstractRequestHandler logoutHandler = new LogoutHandler();
 		AbstractRequestHandler registHandler = new RegistHandler();
 		AbstractRequestHandler loginHandler = new LoginHandler();
-//		AbstractRequestHandler sendFileHandler = new SendFileHandler();
-//		AbstractRequestHandler receiveFileHandler = new ReceiveFileHandler();
+		AbstractRequestHandler sendFileHandler = new SendFileHandler();
+		AbstractRequestHandler receiveFileHandler = new ReceiveFileHandler();
 		AbstractRequestHandler addFriendHandler = new AddFriendHandler();
 
 		requestMap.put(MsgKey.DISPLAY_FRIEND, listFriendsHandler);
@@ -67,8 +92,8 @@ public class Server {
 		requestMap.put(MsgKey.LOGOUT, logoutHandler);
 		requestMap.put(MsgKey.REGISTER, registHandler);
 		requestMap.put(MsgKey.LOGIN, loginHandler);
-//		requestMap.put(MsgKey.SEND_FILE, sendFileHandler);
-//		requestMap.put(MsgKey.RCV_FILE, receiveFileHandler);
+		requestMap.put(MsgKey.SEND_FILE, sendFileHandler);
+		requestMap.put(MsgKey.RCV_FILE, receiveFileHandler);
 		requestMap.put(MsgKey.ADD_FRIEND, addFriendHandler);
 		log.info("启动监听线程....");
 		ListenerThread listener = new ListenerThread("127.0.0.1" , 8888 , this);

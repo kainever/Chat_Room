@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import com.transmit.protocol.Message;
+import com.util.MsgKey;
 
 import net.sf.json.JSONObject;
 
@@ -22,16 +23,12 @@ public class ReceiveFileHandler extends AbstractRequestHandler {
 	// private long fileLength; //发送方不需要知道文件大小
 	private String bool;
 	private Socket fileSocket;
-	@Override
-	public void handleRequest(Message msg) {
-		
-	}
 
-	/*@Override
+	@Override
 	public void handleRequest(Message msg) {
 		String name = msg.getPublisher();// 解析出消息的发送者
 		String friendName = msg.getReceiver();
-		String filePart = msg.getWords();
+		String filePart = (String) msg.getWords();
 
 		String linkName = users.getOnlineUsers().get(name);
 		Socket socket = users.getSocket(linkName);
@@ -47,7 +44,7 @@ public class ReceiveFileHandler extends AbstractRequestHandler {
 
 		System.out.println(name + " 是否接收文件：" + bool);
 
-		 向接收者对话框中回馈消息 
+//		 向接收者对话框中回馈消息 
 		Director director = new Director(new PrintWriterBuilder(socket));
 
 		// 使用指导者生成writer
@@ -61,7 +58,7 @@ public class ReceiveFileHandler extends AbstractRequestHandler {
 		// 将字符串打包成需要客户端解析的形式
 		ResTrans trans = new ResTrans();
 		trans.setPublisher(friendName);
-		trans.setMsgNum("2");
+		trans.setMsgNum(MsgKey.PRIVATE_CHAT);
 		trans.setContent(name + " 是否接收文件：" + bool);
 		String result = trans.getResult();
 
@@ -112,5 +109,5 @@ public class ReceiveFileHandler extends AbstractRequestHandler {
 		}
 	}
 
-*/
+
 }

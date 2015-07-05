@@ -16,11 +16,16 @@ public class Message {
 	private String publisher;
 	private String msgNum;
 	private String receiver;
-	private String words;
+	private Object words;
 	private String receiverIP;
 	private String receiverPort;
 	private String selfIp;
 	private String selfPort;
+	
+	/**
+	 * 客户端用于文件传输的端口
+	 */
+	private String filePort;
 
 	public Message(){
 	}
@@ -63,7 +68,7 @@ public class Message {
 
 
 
-	public String getWords() {
+	public Object getWords() {
 		return words;
 	}
 
@@ -121,7 +126,7 @@ public class Message {
 					sb.append(",\'" + field+"\':");
 				}
 				try {
-					String value = (String) methods[i].invoke(this);
+					Object value =  methods[i].invoke(this);
 					sb.append("'" + value + "'");
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
@@ -151,9 +156,10 @@ public class Message {
 		m.receiver = (String) json.get("receiver");
 		m.receiverIP = (String) json.get("receiverIP");
 		m.receiverPort = (String) json.get("receiverPort");
-		m.words = (String) json.get("words");
+		m.words = json.get("words");
 		m.selfIp = (String) json.get("selfIp");
 		m.selfPort = (String) json.get("selfPort");
+		m.filePort = (String) json.get("filePort");
 		return m;
 	}
 	
@@ -207,5 +213,17 @@ public class Message {
 
 	public void setSelfPort(String selfPort) {
 		this.selfPort = selfPort;
+	}
+
+
+
+	public String getFilePort() {
+		return filePort;
+	}
+
+
+
+	public void setFilePort(String filePort) {
+		this.filePort = filePort;
 	}
 }

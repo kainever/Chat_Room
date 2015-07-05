@@ -18,7 +18,7 @@ public class PrivateChatHandler extends AbstractRequestHandler {
 	public void handleRequest(Message msg) {
 		String name = msg.getPublisher();
 		String fName = msg.getReceiver();
-		String words = msg.getWords();
+		String words = (String) msg.getWords();
 		String content = words;
 log.info("get ÁÄÌìĞÅÏ¢ = " + content);
 		Message res = new Message();

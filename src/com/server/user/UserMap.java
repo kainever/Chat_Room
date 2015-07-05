@@ -1,8 +1,8 @@
 package com.server.user;
 
-import java.net.Socket;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 public class UserMap {
 	public static Logger log = Logger.getLogger(UserMap.class);
 	
-	private static HashMap<String, SocketChannel> userMap = new HashMap<String, SocketChannel>();
+	private static Map<String, SocketChannel> userMap = new ConcurrentHashMap<String, SocketChannel>();
 
 //	public HashMap<String, SocketChannel> getUsersMap() {
 //		return usersMap;

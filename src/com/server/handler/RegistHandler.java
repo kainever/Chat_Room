@@ -15,7 +15,7 @@ public class RegistHandler extends AbstractRequestHandler{
 
 	@Override
 	public void handleRequest(Message msg) {
-		String words = msg.getWords();
+		String words = (String) msg.getWords();
 		String[] ss = words.split("_");
 		Message res = new Message();
 		String content = "";

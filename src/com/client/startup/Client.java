@@ -27,7 +27,9 @@ public class Client {
 	Socket socket ;
 	Socket fileSocket ;
 	HashMap<String, AbstractResponseHandler> responseMap;
-
+//	本地文件传输端口
+	public static String localFilePort;
+	
 	public Client() {
 	}
 
@@ -37,7 +39,8 @@ public class Client {
 			this.socket = new Socket("localhost", 8888);
 			log.info("连接到通信服务器，进行通信..." + socket.getLocalAddress().getHostAddress() + " " + socket.getLocalPort());
 			 this.fileSocket = new Socket("localhost", 8889);
-			log.info("连接到文件传输服务器，准备传输文件。。。");
+			log.info("连接到文件传输服务器，准备传输文件 " + fileSocket);
+			localFilePort = ""+fileSocket.getLocalPort();
 			
 			// 回复的消息集合
 			this.resCollec = new ResponseCollectionManagerImpl();
