@@ -13,7 +13,9 @@ import javax.swing.JOptionPane;
 
 import net.sf.json.JSONObject;
 
+import com.client.startup.Client;
 import com.client.ui.ChatBox;
+import com.server.user.User;
 import com.transmit.protocol.Message;
 import com.util.JsonUtil;
 import com.util.MsgKey;
@@ -37,12 +39,15 @@ public class ResReceiveFileHandler extends AbstractResponseHandler {
 	
 	@Override
 	public void handleResponse() {
-		System.out.println("收到文件");
+		log.info("收到文件" + super.responseMsg);
 
 		JSONObject json = (JSONObject) JsonUtil.parseJson(super.responseMsg,
 				"res");
 		String friendName = json.getString("publisher");
-		String filePart = json.getString("content");
+		String filePart = json.getString("words");
+		
+		User friend =  new User();
+		friend.setName(friendName);
 
 		// 解析文件名和文件大小
 		JSONObject json1 = (JSONObject) JsonUtil.parseJson(filePart,
@@ -52,8 +57,7 @@ public class ResReceiveFileHandler extends AbstractResponseHandler {
 		fileLength = Long.parseLong(length);
 		originalFileName = json1.getString("fileName");
 
-		ChatBox c = ChatBox.getInstance(socket, ResAddFriendHandler.getRealName(),
-				friendName);
+		ChatBox c = ChatBox.getInstance(socket, Client.userName,friend);
 		c.setTitle("File Chat Box");
 
 		/* 向服务器发送消息：是否接收文件 */
@@ -66,7 +70,7 @@ public class ResReceiveFileHandler extends AbstractResponseHandler {
 			bool = "false";
 		}
 
-		System.out.println("是否接收文件：" + bool);
+		log.info("是否接收文件：" + bool);
 
 		BuilderDirector builderDirector = new BuilderDirector(new PrintWriterBuilder(socket));
 		try {
@@ -81,10 +85,13 @@ public class ResReceiveFileHandler extends AbstractResponseHandler {
 
 			// 将字符串打包成需要客户端解析的形式
 			Message trans = new Message();
-			trans.setPublisher(ResAddFriendHandler.getRealName());
+			trans.setPublisher(Client.userName);
 			trans.setMsgNum(MsgKey.RCV_FILE);
 			trans.setReceiver(friendName);
 			trans.setWords(filePartJson);
+			trans.setReceiverIP(socket.getLocalAddress().getHostAddress());
+			trans.setReceiverPort(""+socket.getLocalPort());
+			trans.setFilePort(Client.localFilePort);
 			String result = trans.getResult();
 
 			// 添加客户端的包头
@@ -103,17 +110,22 @@ public class ResReceiveFileHandler extends AbstractResponseHandler {
 	public class ReceiveFileThread extends Thread {
 		public void run() {
 			if (bool.equals("true")) {
+				log.info("客户端启动新的线程接收文件");
 				try {
 					byte[] buffer = new byte[1024];
 
 					DataInputStream din = new DataInputStream(
 							new BufferedInputStream(fileSocket.getInputStream()));
-
+					
+					File down = new File("downloadFiles");
+					if(!down.exists()) {
+						down.mkdir();
+					}
 					// 创建要保存的文件
 					File f = new File("downloadFiles//" + originalFileName);
 					FileOutputStream fos = new FileOutputStream(f);
 
-					System.out.println("准备接收文件");
+					log.info("准备接收文件");
 
 					// int i = 1;
 					int length = 0;
@@ -127,7 +139,7 @@ public class ResReceiveFileHandler extends AbstractResponseHandler {
 							break;
 					}
 
-					System.out.println("接收文件完毕");
+					log.info("接收文件完毕");
 					fos.close();
 
 					JOptionPane.showMessageDialog(null, "文件接收完毕！");

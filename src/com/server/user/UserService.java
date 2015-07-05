@@ -68,6 +68,7 @@ public class UserService {
 				u.setPassword(rs.getString("password"));
 				u.setPort(rs.getString("port"));
 				u.setIp(rs.getString("ip"));
+				u.setFilePort(rs.getString("file_port"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -115,13 +116,14 @@ public class UserService {
 	 * @param port
 	 */
 	public void updateAddress(User user) {
-		String sql = "update user set ip=? , port = ? where user.name=?";
+		String sql = "update user set ip=? , port = ?,file_port=? where user.name=?";
 		Connection conn = DB.getConn();
 		PreparedStatement pst = DB.prepare(conn, sql);
 		try {
 			pst.setString(1, user.getIp());
 			pst.setString(2, user.getPort());
-			pst.setString(3, user.getName());
+			pst.setString(3, user.getFilePort());
+			pst.setString(4, user.getName());
 			pst.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

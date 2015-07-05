@@ -14,6 +14,7 @@ import java.util.HashMap;
 import net.sf.json.JSONObject;
 
 import com.server.startup.Server;
+import com.server.user.User;
 import com.transmit.protocol.Message;
 import com.util.JsonUtil;
 import com.util.MsgKey;
@@ -88,6 +89,7 @@ log.info("得到 " + name + " fileSocket " + fileSocket);
 
 		public void run() {
 			try {
+				log.info("服务端启动" + this.getName() + "接收文件");
 				byte[] buffer = new byte[1024];
 				DataInputStream dis = new DataInputStream(
 						new BufferedInputStream(fileSocket.getInputStream()));
@@ -96,7 +98,8 @@ log.info("得到 " + name + " fileSocket " + fileSocket);
 				fileName = getDateName()+"." +getFileType(filePath);
 				
 				File upload = new File("uploadFiles");
-				upload.mkdir();
+				if(!upload.exists())
+					upload.mkdir();
 
 				// 创建要保存的文件
 				File f = new File("uploadFiles//" + fileName);
@@ -130,8 +133,7 @@ log.info("文件名唯一化 ： "+fileName  + " 保存路径 " + f.getAbsolutePath());
 				e.printStackTrace();
 			}
 log.info("发送通知给接收者...." + friName);
-//			Thread.sleep();
-//			sendFileMsg(name, friName);
+			sendFileMsg(name, friName);
 		}
 
 		private String getDateName() {
@@ -141,13 +143,19 @@ log.info("发送通知给接收者...." + friName);
 		}
 	}
 
+	/**
+	 * 通知接收者接收文件
+	 * @param publisher
+	 * @param friendName
+	 */
 	private void sendFileMsg(String publisher, String friendName) {
 		
 		
 		try {
-			/* 通知接收者接收文件 */
-			Director director = new Director(new PrintWriterBuilder(friSocket));
-			PrintWriter writer = (PrintWriter) director.construct();
+			User friend = userService.getUserByName(friendName);
+	log.info(Server.fileSocketMap + "  " + friend.getIp()+":"+friend.getFilePort());
+			this.friSocket = Server.fileSocketMap.get(friend.getIp()+":"+friend.getFilePort());
+	log.info("取得"+friend.getName()+"的fileSocket " + friSocket);
 
 			// 将文件名和文件大小打包成content
 			HashMap<String, Object> map = new HashMap<String, Object>();
@@ -156,34 +164,28 @@ log.info("发送通知给接收者...." + friName);
 			map.put("fileName", realFileName);
 			map.put("length", fileLength);
 			JSONObject filePart1 = JSONObject.fromObject(map);
-			String filePartJson = JsonTrans.buildJson("filePart", filePart1);
+			String filePartJson = JsonUtil.buildJson("filePart", filePart1);
 
 			// 将字符串打包成需要客户端解析的形式
-			ResTrans trans = new ResTrans();
-			trans.setPublisher(publisher);
-			trans.setMsgNum(MsgKey.RCV_FILE);
-			trans.setContent(filePartJson);
-			String result = trans.getResult();
-
-			// 添加服务器的包头
-			String output = JsonTrans.buildJson("res", result);
-			writer.println(output);
-
-			System.out.println("回应接收方 " + friendName + "的消息为：" + output);
-
-			/* 在接收者的聊天窗口中显示出“有文件来了” */
-			trans = new ResTrans();
-			trans.setPublisher(publisher);
-			trans.setMsgNum("2");
-			trans.setContent(publisher + "发送了文件：" + realFileName);
-
-			result = trans.getResult();
-
-			// 添加服务器的包头
-			output = JsonTrans.buildJson("res", result);
-
-			writer.println(output);
-			writer.flush();
+			Message res = new Message();
+			res.setReceiverIP(friend.getIp());
+			res.setReceiverPort(friend.getPort());
+			res.setMsgNum(MsgKey.RCV_FILE);
+			res.setPublisher(publisher);
+			res.setWords(filePartJson);
+			
+	log.info(this.getClass().getName() + " 回应接收方 = "  + res + " 添加到返回队列");
+			handler.addResponse(res);
+			
+//			Message res2 = new Message();
+//			res2.setPublisher(publisher);
+//			res2.setReceiverIP(friend.getIp());
+//			res2.setReceiverPort(friend.getPort());
+//			res2.setMsgNum(MsgKey.PRIVATE_CHAT);
+//			res2.setWords(publisher + "发送了文件：" + realFileName);
+//			
+//			log.info(this.getClass().getName() + " 返回结果 = "  + res2 + " 添加到返回队列");
+//			handler.addResponse(res2);
 
 		} catch (Exception e) {
 			e.printStackTrace();

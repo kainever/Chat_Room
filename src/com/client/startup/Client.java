@@ -21,6 +21,8 @@ import com.util.MsgKey;
 
 public class Client {
 	
+	public static String userName = null;
+
 	public static Logger log = Logger.getLogger(Client.class);
 	
 	ResponseCollectionManager resCollec;

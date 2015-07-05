@@ -136,6 +136,9 @@ public class HandlerThread extends Thread {
 				String kv = res.getReceiverIP() + ":" + res.getReceiverPort();
 				log.info("´ÓusermapÒÆ³ý");
 				UserMap.remove(kv);
+				String kv2 = res.getReceiverIP()+":"+res.getFilePort();
+				log.info("´ÓFileSocketMapÖÐÒÆ³ý");
+				Server.fileSocketMap.remove(kv2);
 			}
 			String s = res.getResult();
 			String output = JsonUtil.buildJson("res", s);

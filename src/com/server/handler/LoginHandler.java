@@ -28,6 +28,7 @@ public class LoginHandler extends AbstractRequestHandler {
 	public void handleRequest(Message msg) {
 		log.info("loginHandler 处理消息.." + msg );
 		String words = (String) msg.getWords();
+		String filePort = msg.getFilePort();
 		String[] ss = words.split("_");
 		String content = "";
 		log.info("name = " + ss[0] + " password = " + ss[1]);
@@ -39,6 +40,7 @@ public class LoginHandler extends AbstractRequestHandler {
 			u.setPort(msg.getReceiverPort());
 			u.setName(ss[0]);
 			u.setOnline(true);
+			u.setFilePort(filePort);
 			userService.updateAddress(u);
 			userService.updateOnline(u);
 		} else {
@@ -52,6 +54,7 @@ public class LoginHandler extends AbstractRequestHandler {
 		res.setMsgNum(MsgKey.LOGIN);
 		res.setReceiverIP(msg.getReceiverIP());
 		res.setReceiverPort(msg.getReceiverPort());
+		res.setFilePort(filePort);
 		res.setReceiver(ss[0]);
 		res.setWords(content);
 		

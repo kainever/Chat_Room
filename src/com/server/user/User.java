@@ -11,6 +11,7 @@ public class User {
 	private String ip;
 	private String port;
 	private boolean isOnline;
+	private String filePort;
 	
 	public String getName() {
 		return name;
@@ -51,5 +52,11 @@ public class User {
 	}
 	public int getId() {
 		return id;
+	}
+	public String getFilePort() {
+		return filePort;
+	}
+	public void setFilePort(String filePort) {
+		this.filePort = filePort;
 	}
 }

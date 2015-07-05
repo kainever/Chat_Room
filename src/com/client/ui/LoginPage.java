@@ -26,6 +26,7 @@ import com.client.handler.ResLoginHandler;
 import com.client.handler.ResRegistHandler;
 import com.client.handler.AbstractResponseHandler;
 import com.client.handler.ResAddFriendHandler;
+import com.client.startup.Client;
 import com.transmit.protocol.Message;
 import com.util.JsonUtil;
 import com.util.builder.BuilderDirector;
@@ -111,7 +112,7 @@ public class LoginPage extends JFrame {
 			homePage.setUser(userName);
 			log.info("启动homepage并向server请求好友列表");
 			homePage.paintWaitAction();
-
+			Client.userName = this.userName;
 //			SetNameHandler.setRealName(userName);
 			
 			dispose(); //关闭窗口
@@ -170,6 +171,7 @@ public class LoginPage extends JFrame {
 //					message.setPublisher(ResAddFriendHandler.getTempName());
 					message.setMsgNum("6");
 					message.setWords(userName + "_" + password);
+					message.setFilePort(Client.localFilePort);
 					message.setReceiverIP(socket.getLocalAddress().getHostAddress());
 					message.setReceiverPort("" + socket.getLocalPort());
 					String sendMsg = message.getResult();

@@ -24,6 +24,7 @@ public class LogoutHandler extends AbstractRequestHandler {
 		User user = new User();
 		user.setIp(null);
 		user.setPort(null);
+		user.setFilePort(null);
 		user.setName(name);
 		userService.updateAddress(user);
 		userService.updateOnline(user);
